@@ -39,9 +39,13 @@ class NaverBlogAutoAddBuddy():
         print("start done")
         
         
-    def get_blog_post_list(self):
+    def get_blog_post_list(self, next_page = False):
         print("start_blog_post_list")
-        self.driver.find_element(By.LINK_TEXT, "주제별 보기").click()
+        
+        if next_page:
+            self.driver.find_element(By.XPATH, "//a[contains(@class, 'button_next')]").click()
+        else:
+            self.driver.find_element(By.LINK_TEXT, "주제별 보기").click()
         random_sleep_time()
         
         
@@ -160,6 +164,8 @@ class NaverBlogAutoAddBuddy():
                 traceback.format_exc()
             
         print(1)
+        
+        self.get_blog_post_list(next_page = True)
 
 
     def login_naver(self):
