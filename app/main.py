@@ -70,7 +70,6 @@ class NaverBlogAutoAddBuddy():
                 
                 print(blog)
                 blog.click()
-                blog_title = blog.text
                 print(f"start blog ||| {blog_title}")
                 random_sleep_time()
                 
@@ -104,8 +103,8 @@ class NaverBlogAutoAddBuddy():
                         empathy_iframe_id = empathy_iframe.get_attribute("id")
                         self.driver.switch_to.frame(empathy_iframe_id)
                     buddy = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'wrap_bloger')]")[buddy_i]
-                    buddy_add_buddy_buttom = buddy.find_element(By.XPATH, "//a[contains(@class, 'btn_buddy')]")
-                    user_name = buddy.find_element(By.XPATH, "//a[contains(@class, 'pcol2')]")
+                    buddy_add_buddy_buttom = buddy.find_elements(By.XPATH, "//a[contains(@class, 'btn_buddy')]")[buddy_i]
+                    user_name = buddy.find_elements(By.XPATH, "//span[contains(@class, 'ell2')]/a")[buddy_i].text
                     
                     # + 이웃 추가 버튼이 있는 경우에만 클릭
                     if "이웃추가" in buddy_add_buddy_buttom.get_attribute("text"):
@@ -173,9 +172,12 @@ class NaverBlogAutoAddBuddy():
                 
                 # 블로그 목록 가기
                 self.driver.switch_to.window(self.driver.window_handles[0])
-            except:
-                print(f"ERROR {blog_title} {user_name}")
+            except :
+                print("===========================================")
                 traceback.format_exc()
+                print(f"ERROR {blog_title} {user_name}")
+                print("===========================================")
+                
             
         print(1)
         
