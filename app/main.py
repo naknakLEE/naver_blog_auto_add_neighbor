@@ -48,12 +48,26 @@ class NaverBlogAutoAddBuddy():
             self.driver.find_element(By.LINK_TEXT, "주제별 보기").click()
         random_sleep_time()
         
+        black_list = ["강제추행", "구매대행", "음주뺑소니"]
         
         blog_len = len(self.driver.find_elements(By.CSS_SELECTOR, ".desc_inner"))
         for blog_i in range(blog_len):
             try:
                 blog_list = self.driver.find_elements(By.CSS_SELECTOR, ".desc_inner")
                 blog = blog_list[blog_i]
+                
+                
+                blog_titles = self.driver.find_elements(By.XPATH, "//strong[contains(@class, 'title_post')]")
+                remove_other_info_blog_titles = blog_titles[9:]
+                blog_title = remove_other_info_blog_titles[blog_i].text
+                if_black_list = False
+                for black in black_list:
+                    if black in blog_title:
+                        if_black_list = True
+                if if_black_list:
+                    continue
+                
+                
                 print(blog)
                 blog.click()
                 blog_title = blog.text
