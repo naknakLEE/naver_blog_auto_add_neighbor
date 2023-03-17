@@ -11,6 +11,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 
+from utils import keyboard_control
 
 
 with open("../login_info.json", "r") as json_file:
@@ -29,27 +30,29 @@ class NaverBlogAutoAddBuddy():
     def setup_method(self):
         self.driver = webdriver.Chrome()
         self.vars = {}
+        self.wait_page_time = 10
     
     def teardown_method(self):
         self.driver.quit()
     
     def wait_next_window(self):
         print("start wait")
-        WebDriverWait(self.driver, 600).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".link_slogan")))
+        WebDriverWait(self.driver, self.wait_page_time).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".link_slogan")))
         print("start done")
         
+    def wait_page_by_xpath(self, xpath: str):
+        return WebDriverWait(self.driver, self.wait_page_time).until(EC.presence_of_element_located((By.XPATH, xpath)))
         
     def get_blog_post_list(self, next_page = False):
         print("start_blog_post_list")
         
         if next_page:
-            self.driver.find_element(By.XPATH, "//a[contains(@class, 'button_next')]").click()
+            self.wait_page_by_xpath("//a[contains(@class, 'button_next')]").click()
         else:
             self.driver.find_element(By.LINK_TEXT, "주제별 보기").click()
         random_sleep_time()
         
-        black_list = ["강제추행", "구매대행", "음주뺑소니"]
-        
+        black_list = ["강제추행", "구매대행", "음주뺑소니", "이슬아", "태도의", "1시간에", "스피치", "마그리트"]
         blog_len = len(self.driver.find_elements(By.CSS_SELECTOR, ".desc_inner"))
         for blog_i in range(blog_len):
             try:
@@ -81,11 +84,10 @@ class NaverBlogAutoAddBuddy():
                 self.driver.switch_to.frame("mainFrame") 
                 
                 # 공감글 접근, 이것도 frame로 되어있어서 frame를 찾아야됨.
-                # self.driver.find_element(By.XPATH, "//a[contains(@class, 'btn_arr')]").click()
-                empathy_a_herf = self.driver.find_element(By.XPATH, "//a[contains(@id, 'Sympathy')]")
+                empathy_a_herf = self.wait_page_by_xpath("//a[contains(@id, 'Sympathy')]")
                 empathy_a_herf.click()
                 random_sleep_time()
-                empathy_iframe = self.driver.find_element(By.XPATH, "//iframe[contains(@id, 'sympathyFrm')]")
+                empathy_iframe = self.wait_page_by_xpath("//iframe[contains(@id, 'sympathyFrm')]")
                 empathy_iframe_id = empathy_iframe.get_attribute("id")
                 self.driver.switch_to.frame(empathy_iframe_id)
                     
@@ -99,7 +101,7 @@ class NaverBlogAutoAddBuddy():
                     # frame 맞추기 추가
                     if buddy_i >= 1:
                         self.driver.switch_to.frame("mainFrame")
-                        empathy_iframe = self.driver.find_element(By.XPATH, "//iframe[contains(@id, 'sympathyFrm')]")
+                        empathy_iframe = self.wait_page_by_xpath("//iframe[contains(@id, 'sympathyFrm')]")
                         empathy_iframe_id = empathy_iframe.get_attribute("id")
                         self.driver.switch_to.frame(empathy_iframe_id)
                     buddy = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'wrap_bloger')]")[buddy_i]
@@ -114,14 +116,14 @@ class NaverBlogAutoAddBuddy():
                         self.driver.switch_to.window(tag_id_add_buddy)
                         
                         # 서이추 버튼 disable
-                        each_buddy_add_button = self.driver.find_element(By.XPATH, "//input[contains(@id, 'each_buddy_add')]")
+                        each_buddy_add_button = self.wait_page_by_xpath("//input[contains(@id, 'each_buddy_add')]")
                         if each_buddy_add_button.get_attribute("disabled"):
                             self.driver.close()
                             
                         else:
-                            self.driver.find_element(By.XPATH, "//label[contains(@for, 'each_buddy_add')]").click()
+                            self.wait_page_by_xpath("//label[contains(@for, 'each_buddy_add')]").click()
                             random_sleep_time()
-                            next_button = self.driver.find_element(By.XPATH, "//a[contains(@class, '_buddyAddNext')]")
+                            next_button = self.wait_page_by_xpath("//a[contains(@class, '_buddyAddNext')]")
                             next_button.click()
                             random_sleep_time()
                             
@@ -145,18 +147,18 @@ class NaverBlogAutoAddBuddy():
 
                             if not is_alert:
                                 # 서로이웃 신청 메시지 쓰는 칸 입장
-                                textarea = self.driver.find_element(By.XPATH, "//textarea[contains(@id, 'message')]")
+                                textarea = self.wait_page_by_xpath("//textarea[contains(@id, 'message')]")
                                 textarea.click()
                                 random_sleep_time()
                                 textarea.send_keys(buddy_add_comment)
                                 
                                 # 다음 
-                                textarea_popup_next_button = self.driver.find_element(By.XPATH, "//a[contains(@class, '_addBothBuddy')]")
+                                textarea_popup_next_button = self.wait_page_by_xpath("//a[contains(@class, '_addBothBuddy')]")
                                 textarea_popup_next_button.click()
                                 random_sleep_time()
                                 
                                 # 최종 닫기 버튼 클릭
-                                finsh_close_button = self.driver.find_element(By.XPATH, "//a[contains(@class, 'button_close')]")
+                                finsh_close_button = self.wait_page_by_xpath("//a[contains(@class, 'button_close')]")
                                 finsh_close_button.click()
                                 random_sleep_time()
                             
@@ -192,7 +194,7 @@ class NaverBlogAutoAddBuddy():
         
         
         # 3. id 복사 붙여넣기
-        elem_id = self.driver.find_element(By.ID, "id")
+        elem_id = self.wait_page_by_xpath("//input[contains(@id, 'id') and contains(@placeholder, '아이디')]")
         random_sleep_time()
         elem_id.click()
         pyperclip.copy(NAVER_ID)
@@ -200,7 +202,7 @@ class NaverBlogAutoAddBuddy():
         elem_id.send_keys(keyboard_control(), 'v')
         
         # 4. pw 복사 붙여넣기
-        elem_pw = self.driver.find_element(By.ID, "pw")
+        elem_pw = self.wait_page_by_xpath("//input[contains(@id, 'pw') and contains(@placeholder, '비밀번호')]")
         random_sleep_time()
         elem_pw.click()
         random_sleep_time()
