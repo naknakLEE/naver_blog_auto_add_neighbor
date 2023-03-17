@@ -197,7 +197,7 @@ class NaverBlogAutoAddBuddy():
         elem_id.click()
         pyperclip.copy(NAVER_ID)
         random_sleep_time()
-        elem_id.send_keys(Keys.CONTROL, 'v')
+        elem_id.send_keys(keyboard_control(), 'v')
         
         # 4. pw 복사 붙여넣기
         elem_pw = self.driver.find_element(By.ID, "pw")
@@ -206,7 +206,7 @@ class NaverBlogAutoAddBuddy():
         random_sleep_time()
         pyperclip.copy(NAVER_PWD)
         random_sleep_time()
-        elem_pw.send_keys(Keys.CONTROL, 'v')
+        elem_pw.send_keys(keyboard_control(), 'v')
         random_sleep_time()
         
         # 8 | click | id=log.login | 
