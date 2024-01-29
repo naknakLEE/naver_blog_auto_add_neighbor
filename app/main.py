@@ -20,7 +20,8 @@ with open("../login_info.json", "r") as json_file:
 
 NAVER_ID = st_python.get("naver_id")
 NAVER_PWD = st_python.get("naver_pwd")
-buddy_add_comment = "안녕하세요. 공감글 타고 들어와 서이추 드립니다. 자주 소통하는 이웃이 되었으면 좋겠어요. 그럼 오늘도 행복한 하루 보내세요~"
+black_list = st_python.get("exclusion_title")
+buddy_add_comment = st_python.get("comment")
 
 def random_sleep_time():
     time.sleep(random.uniform(0.5, 1))
@@ -37,7 +38,7 @@ class NaverBlogAutoAddBuddy():
     
     def wait_next_window(self):
         print("start wait")
-        WebDriverWait(self.driver, self.wait_page_time).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".link_slogan")))
+        WebDriverWait(self.driver, self.wait_page_time).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".wrap_my_information")))
         print("start done")
         
     def wait_page_by_xpath(self, xpath: str):
@@ -52,7 +53,7 @@ class NaverBlogAutoAddBuddy():
             self.driver.find_element(By.LINK_TEXT, "주제별 보기").click()
         random_sleep_time()
         
-        black_list = ["강제추행", "구매대행", "음주뺑소니", "이슬아", "태도의", "1시간에", "스피치", "마그리트"]
+        
         blog_len = len(self.driver.find_elements(By.CSS_SELECTOR, ".desc_inner"))
         for blog_i in range(blog_len):
             try:
